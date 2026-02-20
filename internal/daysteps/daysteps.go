@@ -21,6 +21,11 @@ const (
 // Формат строки: "678,0h50m" (количество шагов, продолжительность)
 // Возвращает количество шагов, продолжительность и ошибку
 func parsePackage(data string) (int, time.Duration, error) {
+	// Проверяем на пробелы в начале или конце (тесты ждут ошибку)
+	if strings.HasPrefix(data, " ") || strings.HasSuffix(data, " ") {
+		return 0, 0, errors.New("строка не должна содержать пробелы в начале или конце")
+	}
+
 	// Разделяем строку по запятой
 	parts := strings.Split(data, ",")
 
@@ -29,9 +34,9 @@ func parsePackage(data string) (int, time.Duration, error) {
 		return 0, 0, errors.New("неверный формат строки: ожидается 2 части, разделенных запятой")
 	}
 
-	// Убираем лишние пробелы
-	stepsStr := strings.TrimSpace(parts[0])
-	durationStr := strings.TrimSpace(parts[1])
+	// Не используем TrimSpace для пробелов - тесты ждут ошибку
+	stepsStr := parts[0]
+	durationStr := parts[1]
 
 	// Проверяем, что строка с шагами не пустая
 	if stepsStr == "" {
@@ -84,7 +89,7 @@ func DayActionInfo(data string, weight, height float64) string {
 		return ""
 	}
 
-	// Формируем и возвращаем результирующую строку
-	return fmt.Sprintf("Количество шагов: %d.\nДистанция составила %.2f км.\nВы сожгли %.2f ккал.",
+	// ВАЖНО: добавляем \n в конце строки, как ожидают тесты
+	return fmt.Sprintf("Количество шагов: %d.\nДистанция составила %.2f км.\nВы сожгли %.2f ккал.\n",
 		steps, distanceKm, calories)
 }
